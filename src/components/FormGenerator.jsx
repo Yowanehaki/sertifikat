@@ -2,8 +2,36 @@ import React from 'react';
 import { User, Calendar, BookOpen, UserCheck, Loader, Award } from 'lucide-react';
 
 const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error, onReset }) => {
+  const validateForm = () => {
+    const requiredFields = [
+      'id', 
+      'participantName', 
+      'activity', 
+      'dateIssued', 
+      'examinerName', 
+      'examinerPosition', 
+      'companyCode'
+    ];
+    
+    const emptyFields = requiredFields.filter(field => !formData[field]);
+    if (emptyFields.length > 0) {
+      return `Please fill in all required fields: ${emptyFields.join(', ')}`;
+    }
+    return null;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const validationError = validateForm();
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+    onSubmit();
+  };
+
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-8">
+    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
         <User className="w-6 h-6 text-blue-600" />
         Certificate Details
@@ -129,8 +157,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
         )}
         <div className="flex gap-4">
           <button
-            type="button"
-            onClick={onSubmit}
+            type="submit"
             disabled={isGenerating}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
@@ -155,7 +182,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
           </button>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 

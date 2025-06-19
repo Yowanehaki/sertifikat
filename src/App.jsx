@@ -3,6 +3,7 @@ import FormGenerator from './components/FormGenerator';
 import Validation from './components/Validation';
 import PreviewCertif from './components/PreviewCertif';
 import ExportCertif from './components/ExportCertif';
+import { generateCertificate, downloadCertificate, revokeObjectURL } from './services/api';
 
 export default function App() {
   const [formData, setFormData] = useState({
@@ -37,14 +38,26 @@ export default function App() {
     setShowValidation(false);
   };
 
-  const handleConfirmGenerate = () => {
-    setCertificateData({
-      ...formData,
-      certificateId: formData.id || 'DUMMY-CERT-123',
-      validationId: 'VALID-456789',
-    });
-    setShowValidation(false);
-    setShowPreview(true);
+  const handleConfirmGenerate = async () => {
+    try {
+      setError('');
+      const response = await generateCertificate(formData);
+      
+      if (response.success) {
+        setCertificateData({
+          ...formData,
+          ...response.data,
+          previewUrl: `http://localhost:3000/certificates/${response.data.filename}`
+        });
+        setShowValidation(false);
+        setShowPreview(true);
+      } else {
+        throw new Error(response.error || 'Failed to generate certificate');
+      }
+    } catch (error) {
+      console.error('Generation error:', error);
+      setError(error.message);
+    }
   };
 
   const handleReset = () => {
@@ -63,12 +76,36 @@ export default function App() {
     setCertificateData(null);
   };
 
-  const handleDownloadPDF = () => {
-    alert('Download certificate PDF (simulasi, backend nanti)');
+  const handleDownloadPDF = async () => {
+    try {
+      if (!certificateData?.filename) return;
+      const result = await downloadCertificate(certificateData.filename, 'pdf');
+      const link = document.createElement('a');
+      link.href = result.url;
+      link.download = `certificate_${certificateData.participantName}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      revokeObjectURL(result.url);
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
-  const handleDownloadPNG = () => {
-    alert('Download certificate PNG (simulasi, backend nanti)');
+  const handleDownloadPNG = async () => {
+    try {
+      if (!certificateData?.filename) return;
+      const result = await downloadCertificate(certificateData.filename, 'png');
+      const link = document.createElement('a');
+      link.href = result.url;
+      link.download = `certificate_${certificateData.participantName}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      revokeObjectURL(result.url);
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   return (

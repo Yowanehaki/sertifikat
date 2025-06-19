@@ -1,6 +1,5 @@
 import React from 'react';
 import { Award } from 'lucide-react';
-import certBg from '../assets/page_1.png';
 
 const PreviewCertif = ({ certificateData, isGenerated }) => {
   return (
@@ -12,7 +11,17 @@ const PreviewCertif = ({ certificateData, isGenerated }) => {
         <>
           <div className="mb-6 flex justify-center">
             <div className="w-full max-w-2xl relative">
-              <img src={certBg} alt="Certificate Background" className="w-full rounded-xl border-4 border-blue-200 shadow-lg" />
+              {certificateData.previewUrl ? (
+                <img
+                  src={certificateData.previewUrl}
+                  alt="Generated Certificate"
+                  className="w-full rounded-xl border-4 border-blue-200 shadow-lg"
+                />
+              ) : (
+                <div className="w-full h-64 bg-gray-100 rounded-xl flex items-center justify-center">
+                  <p className="text-gray-500">Loading preview...</p>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex justify-center">
@@ -20,7 +29,9 @@ const PreviewCertif = ({ certificateData, isGenerated }) => {
               <tbody>
                 <tr className="even:bg-gray-50">
                   <td className="py-2 px-4 font-semibold text-gray-700 border-b border-gray-100">ID Sertifikat</td>
-                  <td className="py-2 px-4 border-b border-gray-100 font-mono">{certificateData.id || certificateData.certificateId}</td>
+                  <td className="py-2 px-4 border-b border-gray-100 font-mono">
+                    {certificateData.id}
+                  </td>
                 </tr>
                 <tr className="even:bg-gray-50">
                   <td className="py-2 px-4 font-semibold text-gray-700 border-b border-gray-100">Nama Peserta</td>
