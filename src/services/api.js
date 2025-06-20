@@ -2,12 +2,17 @@ const API_BASE_URL = 'http://localhost:3000/api';
 
 export const generateCertificate = async (formData) => {
   try {
+    const form = new FormData();
+    for (const key in formData) {
+      if (formData[key] instanceof File) {
+        form.append(key, formData[key]);
+      } else if (formData[key] !== undefined && formData[key] !== null) {
+        form.append(key, formData[key]);
+      }
+    }
     const response = await fetch(`${API_BASE_URL}/certificates`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData)
+      body: form
     });
     
     if (!response.ok) {
