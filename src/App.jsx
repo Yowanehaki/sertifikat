@@ -140,6 +140,7 @@ export default function App() {
               onDownloadPDF={handleDownloadPDF}
               onDownloadPNG={handleDownloadPNG}
               isGenerated={!!certificateData}
+              previewUrl={certificateData?.previewUrl}
             />
           </>
         )}
