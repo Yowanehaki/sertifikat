@@ -20,6 +20,8 @@ const ExportCertif = ({ onDownloadPDF, onDownloadPNG, onDownload, isGenerated, p
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
       window.open(blobUrl, '_blank');
+      // Revoke after 10s so the blob can be used for multiple prints
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
       document.body.removeChild(loading);
     } catch {
       const loading = document.querySelector('div[style*="z-index:9999"]');
