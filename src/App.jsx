@@ -60,7 +60,7 @@ export default function App() {
     }
   };
 
-  const handleReset = () => {
+  const handleBackToForm = () => {
     setFormData({
       id: '',
       participantName: '',
@@ -121,7 +121,7 @@ export default function App() {
             onSubmit={handleShowValidation}
             isGenerating={false}
             error={error}
-            onReset={handleReset}
+            onReset={handleBackToForm}
           />
         )}
         {showValidation && (
@@ -140,6 +140,7 @@ export default function App() {
               onDownloadPNG={handleDownloadPNG}
               isGenerated={!!certificateData}
               previewUrl={certificateData?.previewUrl}
+              onBackToForm={handleBackToForm}
             />
           </>
         )}

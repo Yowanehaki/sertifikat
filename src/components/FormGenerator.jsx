@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Calendar, BookOpen, UserCheck, Loader, Award } from 'lucide-react';
+import { User, Calendar, BookOpen, UserCheck, Loader, Award, Upload, Building2, FileText } from 'lucide-react';
 
 const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error, onReset }) => {
   const validateForm = () => {
@@ -31,15 +31,18 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
+    <div onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
         <User className="w-6 h-6 text-blue-600" />
         Certificate Details
       </h2>
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Certificates ID
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <div className="w-4 h-4 bg-indigo-100 rounded flex items-center justify-center">
+              <FileText className="w-2.5 h-2.5 text-indigo-600" />
+            </div>
+            Certificate ID
           </label>
           <input
             type="text"
@@ -52,8 +55,10 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <User className="w-4 h-4 inline mr-2" />
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-100 rounded flex items-center justify-center">
+              <User className="w-2.5 h-2.5 text-green-600" />
+            </div>
             Participant Name
           </label>
           <input
@@ -67,8 +72,10 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <BookOpen className="w-4 h-4 inline mr-2" />
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <div className="w-4 h-4 bg-purple-100 rounded flex items-center justify-center">
+              <BookOpen className="w-2.5 h-2.5 text-purple-600" />
+            </div>
             Activity
           </label>
           <input
@@ -82,8 +89,10 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <Calendar className="w-4 h-4 inline mr-2" />
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <div className="w-4 h-4 bg-orange-100 rounded flex items-center justify-center">
+              <Calendar className="w-2.5 h-2.5 text-orange-600" />
+            </div>
             Date Issued
           </label>
           <input
@@ -93,24 +102,44 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
             onChange={onInputChange}
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            placeholder=""
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <div className="w-4 h-4 bg-pink-100 rounded flex items-center justify-center">
+              <Upload className="w-2.5 h-2.5 text-pink-600" />
+            </div>
             Signature
           </label>
-          <input
-            type="file"
-            name="signaturePath"
-            accept="image/*"
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-          />
+          <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors duration-200 bg-gray-50">
+            <input
+              type="file"
+              name="signaturePath"
+              accept="image/*"
+              onChange={onInputChange}
+              required
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <div className="flex flex-col items-center">
+              <Upload className="w-6 h-6 text-gray-400 mb-2" />
+              <p className="text-sm font-medium text-gray-600">Click to upload signature</p>
+              <p className="text-xs text-gray-400 mt-1">PNG</p>
+            </div>
+          </div>
+          {formData.signaturePath && (
+            <div className="mt-2 text-sm text-gray-600">
+              File: {typeof formData.signaturePath === 'string' 
+                ? formData.signaturePath 
+                : formData.signaturePath.name}
+            </div>
+          )}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <UserCheck className="w-4 h-4 inline mr-2" />
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <div className="w-4 h-4 bg-teal-100 rounded flex items-center justify-center">
+              <UserCheck className="w-2.5 h-2.5 text-teal-600" />
+            </div>
             Examiner Name
           </label>
           <input
@@ -124,7 +153,10 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <div className="w-4 h-4 bg-cyan-100 rounded flex items-center justify-center">
+              <Building2 className="w-2.5 h-2.5 text-cyan-600" />
+            </div>
             Examiner Position
           </label>
           <input
@@ -138,7 +170,10 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <div className="w-4 h-4 bg-amber-100 rounded flex items-center justify-center">
+              <Building2 className="w-2.5 h-2.5 text-amber-600" />
+            </div>
             Company Code
           </label>
           <input
@@ -160,6 +195,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
           <button
             type="submit"
             disabled={isGenerating}
+            onClick={handleSubmit}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isGenerating ? (
@@ -183,7 +219,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
           </button>
         </div>
       </div>
-    </form>
+    </div>
   );
 };
 
