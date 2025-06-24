@@ -15,9 +15,9 @@ const Validation = ({ formData, onConfirm, onCancel, error }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 px-4 sm:px-0">
       <div className="bg-white rounded-xl shadow-2xl p-4 sm:p-8 max-w-md w-full mx-4 sm:mx-0">
-        <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">Konfirmasi Generate Sertifikat</h2>
+        <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">Confirm Generate Certificate</h2>
         <div className="mb-3 sm:mb-4 text-sm sm:text-base text-gray-700">
-          Apakah Anda yakin ingin generate sertifikat dengan data ini?
+        Are you sure you want to generate a certificate with this data?
         </div>
         {triedSubmit && emptyFields.length > 0 && (
           <div className="mb-2 text-sm sm:text-base text-red-500">Masih ada field yang kosong!</div>

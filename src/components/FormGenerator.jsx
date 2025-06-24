@@ -39,7 +39,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            ID Sertifikat
+            Certificates ID
           </label>
           <input
             type="text"
@@ -48,7 +48,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
             onChange={onInputChange}
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            placeholder="Masukkan ID Sertifikat"
+            placeholder="Enter the Certificate ID"
           />
         </div>
         <div>
@@ -78,7 +78,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
             onChange={onInputChange}
             required
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            placeholder="e.g., Workshop, Seminar, etc."
+            placeholder="e.g., Workshop, Activity, etc."
           />
         </div>
         <div>
@@ -97,13 +97,14 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Signature (optional)
+            Signature
           </label>
           <input
             type="file"
             name="signaturePath"
             accept="image/*"
             onChange={onInputChange}
+            required
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           />
         </div>
