@@ -112,7 +112,7 @@ export default function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-white to-red-900 flex items-center justify-center">
       <div className="max-w-2xl w-full mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-700 mt-4">Certificate Generator</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mt-4">Certificate Generator</h1>
         </div>
         {!showPreview && (
           <FormGenerator
