@@ -33,5 +33,3 @@ Frontend React untuk aplikasi generator sertifikat digital.
 
 ## Konfigurasi
 - Pastikan endpoint API backend sudah benar di file `src/services/api.js`.
-
-
