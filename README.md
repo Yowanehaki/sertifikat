@@ -1,12 +1,38 @@
-# React + Vite
+# Certificate Generator Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend React untuk aplikasi generator sertifikat digital.
 
-Currently, two official plugins are available:
+## Fitur
+- Form input data peserta & preview sertifikat
+- Zoom, pan, dan modal preview sertifikat
+- Export/download sertifikat
+- Validasi input
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Cara Menjalankan
 
-## Expanding the ESLint configuration
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. Jalankan aplikasi:
+   ```bash
+   npm run dev
+   ```
+
+3. Buka di browser:
+   ```
+   http://localhost:5173
+   ```
+
+## Struktur Folder
+- `src/components/` — Komponen utama (form, preview, export, dsb)
+- `src/services/` — API service untuk komunikasi ke backend
+- `src/route/` — Routing aplikasi
+- `public/` — File statis
+
+## Konfigurasi
+- Pastikan endpoint API backend sudah benar di file `src/services/api.js`.
+
+## Lisensi
+MIT
