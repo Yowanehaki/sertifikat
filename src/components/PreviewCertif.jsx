@@ -108,7 +108,7 @@ const PreviewCertif = ({ certificateData, isGenerated }) => {
               <table className="min-w-[350px] max-w-lg w-full mx-auto bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
                 <tbody>
                   <tr className="even:bg-gray-50">
-                    <td className="py-2 px-4 font-semibold text-gray-700 border-b border-gray-100">Certificates ID</td>
+                    <td className="py-3 px-4 font-semibold text-gray-700 border-b border-gray-100">Certificates ID</td>
                     <td className="py-2 px-4 border-b border-gray-100 font-mono">
                       {certificateData.id}
                     </td>

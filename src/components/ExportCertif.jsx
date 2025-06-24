@@ -52,6 +52,7 @@ const ExportCertif = ({
   };
 
   return (
+    <div className='my-4'>
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
       {/* Download PDF Button */}
       <button
@@ -90,6 +91,7 @@ const ExportCertif = ({
         <RotateCcw className="w-5 h-5 transition-transform group-hover:rotate-180 duration-500" />
         <span className="font-medium hidden sm:inline">New</span>
       </button>
+    </div>
     </div>
   );
 };
