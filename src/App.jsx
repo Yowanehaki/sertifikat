@@ -1,11 +1,14 @@
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useState } from 'react';
 import FormGenerator from './components/FormGenerator';
 import Validation from './components/Validation';
 import PreviewCertif from './components/PreviewCertif';
 import ExportCertif from './components/ExportCertif';
+import BulkCertificateManager from './components/BulkCertificateManager';
 import { generateCertificate, downloadCertificate, revokeObjectURL } from './services/api';
+import { FileText, Upload, Home } from 'lucide-react';
 
-export default function App() {
+function SingleCertificateApp() {
   const [formData, setFormData] = useState({
     id: '',
     participantName: '',
@@ -146,5 +149,52 @@ export default function App() {
         )}
       </div>
     </div>
+  );
+}
+
+function Navigation() {
+  return (
+    <nav className="bg-white shadow-sm border-b">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center text-xl font-bold text-gray-900">
+              <FileText className="mr-2 text-blue-600" size={24} />
+              Sertifikat System
+            </Link>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Link
+              to="/"
+              className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+            >
+              <Home size={16} className="mr-1" />
+              Single Certificate
+            </Link>
+            <Link
+              to="/bulk"
+              className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+            >
+              <Upload size={16} className="mr-1" />
+              Bulk Upload
+            </Link>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <Routes>
+          <Route path="/" element={<SingleCertificateApp />} />
+          <Route path="/bulk" element={<BulkCertificateManager />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
