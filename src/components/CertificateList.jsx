@@ -13,6 +13,7 @@ import {
   Building
 } from 'lucide-react';
 import axios from 'axios';
+import EditParticipantModal from './EditParticipantModal';
 
 const CertificateList = () => {
   const [certificates, setCertificates] = useState([]);
@@ -27,26 +28,36 @@ const CertificateList = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const [debouncedFilters, setDebouncedFilters] = useState(filters);
+
+  // Debounce filter
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedFilters(filters);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [filters]);
 
   // Fetch certificates and activities
   useEffect(() => {
     fetchCertificates();
     fetchActivities();
-  }, [filters]);
+  }, [debouncedFilters]);
 
   const fetchCertificates = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      if (filters.activity) params.append('activity', filters.activity);
-      if (filters.participantName) params.append('participantName', filters.participantName);
-      if (filters.examinerName) params.append('examinerName', filters.examinerName);
+      if (debouncedFilters.activity) params.append('activity', debouncedFilters.activity);
+      if (debouncedFilters.participantName) params.append('participantName', debouncedFilters.participantName);
+      if (debouncedFilters.examinerName) params.append('examinerName', debouncedFilters.examinerName);
       const response = await axios.get(`http://localhost:3000/api/excel/certificates?${params}`);
       if (response.data.success) {
         setCertificates(response.data.data);
       }
-    } catch (err) {
-      console.error('Fetch certificates error:', err);
+    } catch {
       setError('Gagal mengambil data sertifikat');
     } finally {
       setLoading(false);
@@ -121,26 +132,6 @@ const CertificateList = () => {
     }
   };
 
-  // Generate by activity
-  const generateByActivity = async (activity) => {
-    try {
-      setGenerating(true);
-      const response = await axios.post('http://localhost:3000/api/excel/generate-multiple', {
-        activity: activity
-      });
-
-      if (response.data.success) {
-        alert(`Berhasil generate ${response.data.data.totalGenerated} sertifikat untuk kegiatan: ${activity}`);
-        fetchCertificates(); // Refresh list
-      }
-    } catch (err) {
-      console.error('Generate by activity error:', err);
-      alert('Gagal generate sertifikat berdasarkan kegiatan');
-    } finally {
-      setGenerating(false);
-    }
-  };
-
   // Delete certificate
   const deleteCertificate = async (id) => {
     if (!confirm('Apakah Anda yakin ingin menghapus sertifikat ini?')) return;
@@ -164,6 +155,33 @@ const CertificateList = () => {
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  // Handler untuk buka modal edit
+  const handleEdit = (certificate) => {
+    setEditData(certificate);
+    setEditModalOpen(true);
+  };
+
+  // Handler untuk close modal edit
+  const handleCloseEdit = () => {
+    setEditModalOpen(false);
+    setEditData(null);
+  };
+
+  // Handler untuk submit edit
+  const handleSubmitEdit = async (updatedData) => {
+    try {
+      // Kirim ke backend
+      const response = await axios.put(`http://localhost:3000/api/excel/certificates/${updatedData.id}`, updatedData);
+      if (response.data.success) {
+        setEditModalOpen(false);
+        setEditData(null);
+        fetchCertificates();
+      }
+    } catch {
+      alert('Gagal update data');
+    }
   };
 
   if (loading) {
@@ -364,11 +382,11 @@ const CertificateList = () => {
                         <Download size={16} />
                       </button>
                       <button
-                        onClick={() => generateByActivity(certificate.activity)}
+                        onClick={() => handleEdit(certificate)}
                         className="p-1 text-green-600 hover:text-green-800 transition-colors"
-                        title="Generate Semua Sertifikat Kegiatan Ini"
+                        title="Edit Data Peserta"
                       >
-                        <FileText size={16} />
+                        <Edit size={16} />
                       </button>
                       <button
                         onClick={() => deleteCertificate(certificate.id)}
@@ -402,6 +420,16 @@ const CertificateList = () => {
             </span>
           )}
         </div>
+      )}
+
+      {/* Modal Edit Participant */}
+      {editModalOpen && (
+        <EditParticipantModal
+          open={editModalOpen}
+          onClose={handleCloseEdit}
+          data={editData}
+          onSubmit={handleSubmitEdit}
+        />
       )}
     </div>
   );
