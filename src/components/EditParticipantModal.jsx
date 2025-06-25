@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 const EditParticipantModal = ({ open, onClose, participant, onSave }) => {
   const [form, setForm] = useState({
-    name: '',
+    serialNumber: '',
+    participantName: '',
     activity: '',
     companyCode: ''
   });
@@ -10,7 +11,8 @@ const EditParticipantModal = ({ open, onClose, participant, onSave }) => {
   useEffect(() => {
     if (participant) {
       setForm({
-        name: participant.name || '',
+        serialNumber: participant.serialNumber || '',
+        participantName: participant.participantName || '',
         activity: participant.activity || '',
         companyCode: participant.companyCode || ''
       });
@@ -34,11 +36,22 @@ const EditParticipantModal = ({ open, onClose, participant, onSave }) => {
         <h2 className="text-lg font-bold mb-4">Edit Participant</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Name</label>
+            <label className="block text-sm font-medium mb-1">Certificate ID</label>
             <input
               type="text"
-              name="name"
-              value={form.name}
+              name="serialNumber"
+              value={form.serialNumber}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2 font-mono"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Participant Name</label>
+            <input
+              type="text"
+              name="participantName"
+              value={form.participantName}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
               required
