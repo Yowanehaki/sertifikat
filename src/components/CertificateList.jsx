@@ -40,7 +40,6 @@ const CertificateList = () => {
   const [bulkGenerateForm, setBulkGenerateForm] = useState({ dateIssued: '', examinerName: '', examinerPosition: '', signature: null });
   const [bulkGenerateLoading, setBulkGenerateLoading] = useState(false);
   const [bulkGenerateError, setBulkGenerateError] = useState("");
-  const [bulkGenerateProgress, setBulkGenerateProgress] = useState({ current: 0, total: 0 });
 
   // Use modal scroll hook for delete confirmation modal
   useModalScroll(!!deleteConfirmId);
@@ -291,33 +290,22 @@ const CertificateList = () => {
     e.preventDefault();
     if (!validateBulkGenerateForm()) return;
     setBulkGenerateLoading(true);
-    setBulkGenerateProgress({ current: 0, total: selectedCertificates.length });
-    setBulkGenerateResult([]);
     try {
-      const results = [];
-      for (let i = 0; i < selectedCertificates.length; i++) {
-        const certId = selectedCertificates[i];
-        const formData = new FormData();
-        formData.append('dateIssued', bulkGenerateForm.dateIssued);
-        formData.append('examinerName', bulkGenerateForm.examinerName);
-        formData.append('examinerPosition', bulkGenerateForm.examinerPosition);
-        if (bulkGenerateForm.signature) formData.append('signature', bulkGenerateForm.signature);
-        try {
-          const response = await axios.post(`http://localhost:3000/api/excel/generate/${certId}`, formData, { responseType: 'json' });
-          if (response.data.success) {
-            results.push({ ...response.data.data, id: certId });
-          } else {
-            results.push({ error: response.data.message || 'Gagal generate', id: certId });
-          }
-        } catch {
-          results.push({ error: 'Gagal generate', id: certId });
-        }
-        setBulkGenerateProgress({ current: i + 1, total: selectedCertificates.length });
+      const formData = new FormData();
+      formData.append('ids', JSON.stringify(selectedCertificates));
+      formData.append('dateIssued', bulkGenerateForm.dateIssued);
+      formData.append('examinerName', bulkGenerateForm.examinerName);
+      formData.append('examinerPosition', bulkGenerateForm.examinerPosition);
+      if (bulkGenerateForm.signature) formData.append('signature', bulkGenerateForm.signature);
+      const response = await axios.post('http://localhost:3000/api/excel/generate-multiple-with-data', formData, { responseType: 'json' });
+      if (response.data.success) {
+        setBulkGenerateResult(response.data.data.files || []);
+        setSelectedCertificates([]);
+        fetchCertificates();
+        closeBulkGenerateModal();
+      } else {
+        setBulkGenerateError(response.data.message || 'Gagal generate sertifikat massal');
       }
-      setBulkGenerateResult(results);
-      setSelectedCertificates([]);
-      fetchCertificates();
-      setBulkGenerateError("");
     } catch {
       setBulkGenerateError('Gagal generate sertifikat massal');
     }
@@ -328,8 +316,8 @@ const CertificateList = () => {
   const handleDownloadZip = async (type) => {
     if (!bulkGenerateResult || bulkGenerateResult.length === 0) return;
     const filenames = type === 'pdf'
-      ? bulkGenerateResult.map(f => f.pdfFileName)
-      : bulkGenerateResult.map(f => f.fileName);
+      ? bulkGenerateResult.map(f => f.pdfFileName || f.filename || f.fileName).filter(Boolean)
+      : bulkGenerateResult.map(f => f.fileName || f.filename || f.pdfFileName).filter(Boolean);
     try {
       const response = await fetch('http://localhost:3000/api/certificates/download-zip', {
         method: 'POST',
@@ -496,59 +484,51 @@ const CertificateList = () => {
               </div>
             </div>
             <ul className="divide-y divide-gray-100">
-              {bulkGenerateResult.map((file, index) => {
-                const cert = certificates.find(c => c.id === file.id);
-                // Determine file names for download
-                const pdfFileName = file.pdfFileName || file.filename || file.fileName || `${file.id}.pdf`;
-                const pngFileName = file.fileName || file.filename || file.pdfFileName || `${file.id}.png`;
-                const pdfUrl = `/api/certificates/download/${pdfFileName}?format=pdf`;
-                const pngUrl = `/api/certificates/download/${pngFileName}`;
-                return (
-                  <li key={file.id} className={`p-4 hover:bg-gray-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
-                    <div className="grid grid-cols-12 gap-4 items-center">
-                      <div className="col-span-5">
-                        <div className="flex items-center gap-3">
-                          <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="text-blue-600 font-semibold text-sm">{index + 1}</span>
-                          </div>
-                          <span className="font-medium text-gray-900 truncate">{cert ? cert.participantName : file.id}</span>
+              {bulkGenerateResult.map((file, index) => (
+                <li key={file.id} className={`p-4 hover:bg-gray-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
+                  <div className="grid grid-cols-12 gap-4 items-center">
+                    <div className="col-span-5">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-blue-600 font-semibold text-sm">{index + 1}</span>
                         </div>
-                      </div>
-                      <div className="col-span-7">
-                        <div className="flex gap-2 justify-center flex-wrap">
-                          <button
-                            className="flex items-center gap-1 px-3 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm shadow-sm hover:shadow-md"
-                            onClick={() => handleDownloadFile(pdfUrl, pdfFileName)}
-                          >
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
-                            PDF
-                          </button>
-                          <button
-                            className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm shadow-sm hover:shadow-md"
-                            onClick={() => handleDownloadFile(pngUrl, pngFileName)}
-                          >
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                            </svg>
-                            PNG
-                          </button>
-                          <button
-                            className="flex items-center gap-1 px-3 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm shadow-sm hover:shadow-md"
-                            onClick={() => handlePrintPDF(pdfUrl)}
-                          >
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zM5 14H4v-2h1v2zm1 0v2h8v-2H6zm0-1h8V9H6v4z" clipRule="evenodd" />
-                            </svg>
-                            Print
-                          </button>
-                        </div>
+                        <span className="font-medium text-gray-900 truncate">{file.participantName}</span>
                       </div>
                     </div>
-                  </li>
-                );
-              })}
+                    <div className="col-span-7">
+                      <div className="flex gap-2 justify-center flex-wrap">
+                        <button
+                          className="flex items-center gap-1 px-3 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm shadow-sm hover:shadow-md"
+                          onClick={() => handleDownloadFile(`http://localhost:3000${file.pdfUrl}`, `${file.fileName.replace('.png', '.pdf')}`)}
+                        >
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                          PDF
+                        </button>
+                        <button
+                          className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm shadow-sm hover:shadow-md"
+                          onClick={() => handleDownloadFile(`http://localhost:3000${file.pngUrl}`, file.fileName)}
+                        >
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                          </svg>
+                          PNG
+                        </button>
+                        <button
+                          className="flex items-center gap-1 px-3 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm shadow-sm hover:shadow-md"
+                          onClick={() => handlePrintPDF(`http://localhost:3000${file.pdfUrl}`)}
+                        >
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zM5 14H4v-2h1v2zm1 0v2h8v-2H6zm0-1h8V9H6v4z" clipRule="evenodd" />
+                          </svg>
+                          Print
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -882,7 +862,6 @@ const CertificateList = () => {
           <button 
             onClick={closeBulkGenerateModal}
             className="text-white hover:text-gray-200 transition-colors"
-            disabled={bulkGenerateLoading}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -913,25 +892,6 @@ const CertificateList = () => {
             </div>
           </div>
 
-          {/* Progress Bar */}
-          {bulkGenerateLoading && (
-            <div className="w-full flex flex-col items-center my-4">
-              <div className="flex items-center gap-2 mb-2">
-                <svg className="animate-spin w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span className="font-semibold text-green-700">Sedang generate: {bulkGenerateProgress.current}/{bulkGenerateProgress.total}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${bulkGenerateProgress.total ? (bulkGenerateProgress.current / bulkGenerateProgress.total) * 100 : 0}%` }}
-                ></div>
-              </div>
-            </div>
-          )}
-
           {/* Form Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Date Issued */}
@@ -947,7 +907,6 @@ const CertificateList = () => {
                   onChange={handleBulkGenerateFormChange} 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 outline-none" 
                   required
-                  disabled={bulkGenerateLoading || bulkGenerateResult.length > 0}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 </div>
@@ -967,7 +926,6 @@ const CertificateList = () => {
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 outline-none" 
                 placeholder="Masukkan nama penguji"
                 required 
-                disabled={bulkGenerateLoading || bulkGenerateResult.length > 0}
               />
             </div>
 
@@ -984,7 +942,6 @@ const CertificateList = () => {
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 outline-none" 
                 placeholder="Masukkan jabatan penguji"
                 required 
-                disabled={bulkGenerateLoading || bulkGenerateResult.length > 0}
               />
             </div>
 
@@ -1001,7 +958,6 @@ const CertificateList = () => {
                   onChange={handleBulkGenerateFormChange} 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
                   required 
-                  disabled={bulkGenerateLoading || bulkGenerateResult.length > 0}
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1">
@@ -1027,9 +983,7 @@ const CertificateList = () => {
             <button 
               type="button" 
               onClick={closeBulkGenerateModal} 
-              className="flex-1 px-6 py-3 border-2 bg-gradient-to-r from-red-500 to-red-600 text-white border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-black-50 hover:to-red-300 hover:border-gray-400"
-              disabled={bulkGenerateLoading}
-            >
+              className="flex-1 px-6 py-3 border-2 bg-gradient-to-r from-red-500 to-red-600 text-white border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-black-50 hover:to-red-300 hover:border-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
               Batal
             </button>
             <button 
