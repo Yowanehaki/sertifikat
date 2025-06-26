@@ -1,33 +1,73 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { User, Calendar, BookOpen, UserCheck, Loader, Award, Upload, Building2, FileText } from 'lucide-react';
 
 const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error, onReset }) => {
+  const [errors, setErrors] = useState({});
+
+  const validateField = (name, value) => {
+    if (!value || value.trim() === '') {
+      return true; // Just return true if empty, no message
+    }
+    return false;
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    
+    const hasError = validateField(name, value);
+    setErrors(prev => ({
+      ...prev,
+      [name]: hasError
+    }));
+  };
+
   const validateForm = () => {
     const requiredFields = [
-      'id', 
-      'participantName', 
-      'activity', 
-      'dateIssued', 
-      'examinerName', 
-      'examinerPosition', 
-      'companyCode'
+      { field: 'id', label: 'Certificate ID' },
+      { field: 'participantName', label: 'Participant Name' },
+      { field: 'activity', label: 'Activity' },
+      { field: 'dateIssued', label: 'Date Issued' },
+      { field: 'examinerName', label: 'Examiner Name' },
+      { field: 'examinerPosition', label: 'Examiner Position' },
+      { field: 'companyCode', label: 'Company Code' }
     ];
-    
-    const emptyFields = requiredFields.filter(field => !formData[field]);
-    if (emptyFields.length > 0) {
-      return `Please fill in all required fields: ${emptyFields.join(', ')}`;
-    }
-    return null;
+
+    const newErrors = {};
+    let hasErrors = false;
+
+    requiredFields.forEach(({ field, label }) => {
+      const hasError = validateField(label, formData[field]);
+      if (hasError) {
+        newErrors[field] = hasError;
+        hasErrors = true;
+      }
+    });
+
+    setErrors(newErrors);
+    return !hasErrors;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const validationError = validateForm();
-    if (validationError) {
-      alert(validationError);
-      return;
+    const isValid = validateForm();
+    if (isValid) {
+      onSubmit();
     }
-    onSubmit();
+  };
+
+  const handleInputChangeWithValidation = (e) => {
+    const { name, type } = e.target;
+    
+    if (type === 'file') {
+      onInputChange(e);
+    } else {
+      onInputChange(e);
+      
+      // Clear error when user starts typing
+      if (errors[name]) {
+        setErrors(prev => ({ ...prev, [name]: '' }));
+      }
+    }
   };
 
   return (
@@ -42,15 +82,17 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
             <div className="w-4 h-4 bg-indigo-100 rounded flex items-center justify-center">
               <FileText className="w-2.5 h-2.5 text-indigo-600" />
             </div>
-            Certificate ID
+            Certificate ID <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="id"
             value={formData.id || ''}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            onChange={handleInputChangeWithValidation}
+            onBlur={handleBlur}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+              errors.id ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder="Enter the Certificate ID"
           />
         </div>
@@ -59,15 +101,17 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
             <div className="w-4 h-4 bg-green-100 rounded flex items-center justify-center">
               <User className="w-2.5 h-2.5 text-green-600" />
             </div>
-            Participant Name
+            Participant Name <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="participantName"
             value={formData.participantName}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            onChange={handleInputChangeWithValidation}
+            onBlur={handleBlur}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+              errors.participantName ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder="Enter participant's full name"
           />
         </div>
@@ -76,15 +120,17 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
             <div className="w-4 h-4 bg-purple-100 rounded flex items-center justify-center">
               <BookOpen className="w-2.5 h-2.5 text-purple-600" />
             </div>
-            Activity
+            Activity <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="activity"
             value={formData.activity}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            onChange={handleInputChangeWithValidation}
+            onBlur={handleBlur}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+              errors.activity ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder="e.g., Workshop, Activity, etc."
           />
         </div>
@@ -93,15 +139,17 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
             <div className="w-4 h-4 bg-orange-100 rounded flex items-center justify-center">
               <Calendar className="w-2.5 h-2.5 text-orange-600" />
             </div>
-            Date Issued
+            Date Issued <span className="text-red-500">*</span>
           </label>
           <input
             type="date"
             name="dateIssued"
             value={formData.dateIssued}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            onChange={handleInputChangeWithValidation}
+            onBlur={handleBlur}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+              errors.dateIssued ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder=""
           />
         </div>
@@ -118,7 +166,6 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
               name="signaturePath"
               accept="image/*"
               onChange={onInputChange}
-              required
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             <div className="flex flex-col items-center">
@@ -140,15 +187,17 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
             <div className="w-4 h-4 bg-teal-100 rounded flex items-center justify-center">
               <UserCheck className="w-2.5 h-2.5 text-teal-600" />
             </div>
-            Examiner Name
+            Examiner Name <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="examinerName"
             value={formData.examinerName}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            onChange={handleInputChangeWithValidation}
+            onBlur={handleBlur}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+              errors.examinerName ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder="Enter examiner's name"
           />
         </div>
@@ -157,15 +206,17 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
             <div className="w-4 h-4 bg-cyan-100 rounded flex items-center justify-center">
               <Building2 className="w-2.5 h-2.5 text-cyan-600" />
             </div>
-            Examiner Position
+            Examiner Position <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="examinerPosition"
             value={formData.examinerPosition}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            onChange={handleInputChangeWithValidation}
+            onBlur={handleBlur}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+              errors.examinerPosition ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder="Enter examiner's position"
           />
         </div>
@@ -174,15 +225,17 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
             <div className="w-4 h-4 bg-amber-100 rounded flex items-center justify-center">
               <Building2 className="w-2.5 h-2.5 text-amber-600" />
             </div>
-            Company Code
+            Company Code <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             name="companyCode"
             value={formData.companyCode}
-            onChange={onInputChange}
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            onChange={handleInputChangeWithValidation}
+            onBlur={handleBlur}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+              errors.companyCode ? 'border-red-500' : 'border-gray-300'
+            }`}
             placeholder="Enter company code"
           />
         </div>

@@ -2,8 +2,22 @@ import React, { useState } from 'react';
 
 const Validation = ({ formData, onConfirm, onCancel, error }) => {
   const [triedSubmit, setTriedSubmit] = useState(false);
-  const requiredFields = ['id', 'participantName', 'activity', 'dateIssued', 'examinerName', 'examinerPosition', 'companyCode'];
-  const emptyFields = requiredFields.filter((key) => !formData[key]);
+  
+  const validateForm = () => {
+    const requiredFields = [
+      { field: 'id', label: 'Certificate ID' },
+      { field: 'participantName', label: 'Participant Name' },
+      { field: 'activity', label: 'Activity' },
+      { field: 'dateIssued', label: 'Date Issued' },
+      { field: 'examinerName', label: 'Examiner Name' },
+      { field: 'examinerPosition', label: 'Examiner Position' },
+      { field: 'companyCode', label: 'Company Code' }
+    ];
+    
+    return requiredFields.filter(({ field }) => !formData[field] || formData[field].trim() === '');
+  };
+  
+  const emptyFields = validateForm();
 
   const handleConfirm = () => {
     setTriedSubmit(true);
@@ -20,7 +34,9 @@ const Validation = ({ formData, onConfirm, onCancel, error }) => {
         Are you sure you want to generate a certificate with this data?
         </div>
         {triedSubmit && emptyFields.length > 0 && (
-          <div className="mb-2 text-sm sm:text-base text-red-500">Masih ada field yang kosong!</div>
+          <div className="mb-2 text-sm sm:text-base text-red-500">
+            Please complete all required fields
+          </div>
         )}
         {error && <div className="mb-2 text-sm sm:text-base text-red-500">{error}</div>}
         <div className="flex gap-3 sm:gap-4 justify-end mt-4 sm:mt-6">

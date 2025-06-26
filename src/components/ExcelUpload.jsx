@@ -171,8 +171,7 @@ const ExcelUpload = ({ onUploadSuccess }) => {
         <ul className="text-sm text-gray-600 space-y-1">
           <li>• File harus berformat Excel (.xlsx atau .xls)</li>
           <li>• Baris pertama harus berisi header kolom</li>
-          <li>• Kolom wajib: Nama Peserta, Activity</li>
-          <li>• Kolom opsional: Examiner Name, Examiner Position, Company Code, Date Issued</li>
+          <li>• Kolom wajib: ID Sertifikat, Nama Peserta, Activity, Company Code</li>
           <li>• Data kosong akan menggunakan nilai default</li>
         </ul>
       </div>
