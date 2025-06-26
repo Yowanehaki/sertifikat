@@ -24,6 +24,7 @@ function SingleCertificateApp() {
   const [showPreview, setShowPreview] = useState(false);
   const [error, setError] = useState('');
   const [certificateData, setCertificateData] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -43,6 +44,8 @@ function SingleCertificateApp() {
   };
 
   const handleConfirmGenerate = async () => {
+    if (isGenerating) return;
+    setIsGenerating(true);
     try {
       setError('');
       const response = await generateCertificate(formData);
@@ -62,6 +65,7 @@ function SingleCertificateApp() {
       console.error('Generation error:', error);
       setError(error.message);
     }
+    setIsGenerating(false);
   };
 
   const handleBackToForm = () => {
@@ -122,7 +126,7 @@ function SingleCertificateApp() {
             formData={formData}
             onInputChange={handleInputChange}
             onSubmit={handleShowValidation}
-            isGenerating={false}
+            isGenerating={isGenerating}
             error={error}
             onReset={handleBackToForm}
           />
@@ -133,6 +137,7 @@ function SingleCertificateApp() {
             onConfirm={handleConfirmGenerate}
             onCancel={handleCancelValidation}
             error={error}
+            loading={isGenerating}
           />
         )}
         {showPreview && (
