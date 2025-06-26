@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Calendar, BookOpen, UserCheck, Loader, Award, Upload, Building2, FileText } from 'lucide-react';
+import { User, BookOpen, UserCheck, Loader, Award, Upload, FileText } from 'lucide-react';
 
 const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error, onReset }) => {
   const [errors, setErrors] = useState({});
@@ -137,7 +137,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
             <div className="w-4 h-4 bg-orange-100 rounded flex items-center justify-center">
-              <Calendar className="w-2.5 h-2.5 text-orange-600" />
+              <BookOpen className="w-2.5 h-2.5 text-orange-600" />
             </div>
             Date Issued <span className="text-red-500">*</span>
           </label>
@@ -204,7 +204,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
             <div className="w-4 h-4 bg-cyan-100 rounded flex items-center justify-center">
-              <Building2 className="w-2.5 h-2.5 text-cyan-600" />
+              <BookOpen className="w-2.5 h-2.5 text-cyan-600" />
             </div>
             Examiner Position <span className="text-red-500">*</span>
           </label>
@@ -223,7 +223,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
             <div className="w-4 h-4 bg-amber-100 rounded flex items-center justify-center">
-              <Building2 className="w-2.5 h-2.5 text-amber-600" />
+              <BookOpen className="w-2.5 h-2.5 text-amber-600" />
             </div>
             Company Code <span className="text-red-500">*</span>
           </label>

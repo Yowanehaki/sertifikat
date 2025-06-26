@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import useModalScroll from './ui/useModalScroll';
 
 const Validation = ({ formData, onConfirm, onCancel, error }) => {
   const [triedSubmit, setTriedSubmit] = useState(false);
+  useModalScroll(true);
   
   const validateForm = () => {
     const requiredFields = [
@@ -27,8 +29,8 @@ const Validation = ({ formData, onConfirm, onCancel, error }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 px-4 sm:px-0">
-      <div className="bg-white rounded-xl shadow-2xl p-4 sm:p-8 max-w-md w-full mx-4 sm:mx-0">
+    <div className="fixed inset-0 flex items-center justify-center bg-opacity-40 z-50 px-4 sm:px-0">
+      <div className="bg-white rounded-xl shadow-2xl border-1 p-4 sm:p-8 max-w-md w-full mx-4 sm:mx-0">
         <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">Confirm Generate Certificate</h2>
         <div className="mb-3 sm:mb-4 text-sm sm:text-base text-gray-700">
         Are you sure you want to generate a certificate with this data?
