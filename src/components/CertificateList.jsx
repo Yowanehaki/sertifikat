@@ -907,6 +907,7 @@ const CertificateList = () => {
                   onChange={handleBulkGenerateFormChange} 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 outline-none" 
                   required
+                  disabled={bulkGenerateLoading || bulkGenerateResult.length > 0}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 </div>
@@ -926,6 +927,7 @@ const CertificateList = () => {
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 outline-none" 
                 placeholder="Masukkan nama penguji"
                 required 
+                disabled={bulkGenerateLoading || bulkGenerateResult.length > 0}
               />
             </div>
 
@@ -942,6 +944,7 @@ const CertificateList = () => {
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 outline-none" 
                 placeholder="Masukkan jabatan penguji"
                 required 
+                disabled={bulkGenerateLoading || bulkGenerateResult.length > 0}
               />
             </div>
 
@@ -958,6 +961,7 @@ const CertificateList = () => {
                   onChange={handleBulkGenerateFormChange} 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
                   required 
+                  disabled={bulkGenerateLoading || bulkGenerateResult.length > 0}
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1">
@@ -983,13 +987,15 @@ const CertificateList = () => {
             <button 
               type="button" 
               onClick={closeBulkGenerateModal} 
-              className="flex-1 px-6 py-3 border-2 bg-gradient-to-r from-red-500 to-red-600 text-white border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-black-50 hover:to-red-300 hover:border-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300">
+              className="flex-1 px-6 py-3 border-2 bg-gradient-to-r from-red-500 to-red-600 text-white border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-black-50 hover:to-red-300 hover:border-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              disabled={bulkGenerateLoading || bulkGenerateResult.length > 0}
+            >
               Batal
             </button>
             <button 
               type="submit" 
               className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold rounded-xl hover:from-green-700 hover:to-blue-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" 
-              disabled={bulkGenerateLoading}
+              disabled={bulkGenerateLoading || bulkGenerateResult.length > 0}
             >
               {bulkGenerateLoading ? (
                 <>
