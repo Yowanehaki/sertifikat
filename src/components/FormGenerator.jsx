@@ -71,7 +71,7 @@ const FormGenerator = ({ formData, onInputChange, onSubmit, isGenerating, error,
   };
 
   return (
-    <div onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
+    <div onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 mb-8">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
         <User className="w-6 h-6 text-blue-600" />
         Certificate Details
